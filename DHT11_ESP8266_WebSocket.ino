@@ -215,4 +215,55 @@ String getTimeString() {
   unsigned long currentTime = millis();
   unsigned long seconds = currentTime / 1000;
   unsigned long minutes = seconds / 60;
-  unsigned long hours = minutes /
+  unsigned long hours = minutes / 60;
+  
+  seconds = seconds % 60;
+  minutes = minutes % 60;
+  hours = hours % 24;
+  
+  String timeStr = "";
+  if (hours < 10) timeStr += "0";
+  timeStr += String(hours) + ":";
+  if (minutes < 10) timeStr += "0";
+  timeStr += String(minutes) + ":";
+  if (seconds < 10) timeStr += "0";
+  timeStr += String(seconds);
+  
+  return timeStr;
+}
+
+// Additional utility functions
+void printWiFiStatus() {
+  Serial.println("=== WiFi Status ===");
+  Serial.print("SSID: ");
+  Serial.println(WiFi.SSID());
+  Serial.print("IP Address: ");
+  Serial.println(WiFi.localIP());
+  Serial.print("Signal Strength (RSSI): ");
+  Serial.print(WiFi.RSSI());
+  Serial.println(" dBm");
+  Serial.println("==================");
+}
+
+void checkWiFiConnection() {
+  if (WiFi.status() != WL_CONNECTED) {
+    Serial.println("WiFi connection lost. Reconnecting...");
+    WiFi.begin(ssid, password);
+    
+    int attempts = 0;
+    while (WiFi.status() != WL_CONNECTED && attempts < 20) {
+      delay(500);
+      Serial.print(".");
+      attempts++;
+    }
+    
+    if (WiFi.status() == WL_CONNECTED) {
+      Serial.println();
+      Serial.println("WiFi reconnected!");
+      printWiFiStatus();
+    } else {
+      Serial.println();
+      Serial.println("Failed to reconnect to WiFi");
+    }
+  }
+}
